@@ -1,0 +1,14 @@
+{
+  "name": "wtsc",
+  "version": "0.0.1",
+  "bin": {
+    "wtsc": "./wtsc.js"
+  },
+  "devDependencies": {
+    "@types/chalk": "^2.2.0",
+    "@types/node": "^8.5.1"
+  },
+  "dependencies": {
+    "chalk": "^2.3.0"
+  }
+}
