@@ -5,33 +5,31 @@ import {spawn} from 'child_process'
 
 const args = process.argv.slice(2)
 const log = (s: string) => {
-  for (var line of s.split('\n')) {
-    if (line.trim() !== '') {
-      process.stdout.write(line)
-      if (!/^(\033[^m]+m)*$/.test(line))
-        process.stdout.write('\n')
-    }
-  }
+  process.stdout.write(s)
 }
 
 const chalk = _chalk.constructor({level: 3})
-const h = (n: number) => chalk.hsl(n, 100, 60)
+const h = (n: number) => chalk.hsl(n, 60, 60)
 const c_file = h(0)
 const c_line = h(130).bold
-const c_end = chalk.rgb(22, 45, 43)
+const c_end = h(30) // orange
 const c_module = h(180)
 const c_any = h(40)
-const c_param = h(60)
-const c_prop = chalk.greenBright
-const c_type = chalk.cyanBright
+const c_param = h(60) // yellow
+const c_prop = h(200) // cyan
+const c_type = h(120) // green
 const basic = chalk.grey
 
 type ReplacerFn = (...matches: string[]) => string
 
 const mp = new Map<RegExp, ReplacerFn>()
 
-mp.set(/(\s|\n)*^(.*?Compilation complete.*?)$(\s|\n)*/mg, (sp, line) => {
-  return c_end.bold(`${line}`)
+mp.set(/(\s|\n|^)*(.*?file change detected.*?$)(\s|\n)*/mgi, (sp, line) => {
+  return '\n' + c_end.bold(`${line}`) + '\n'
+})
+
+mp.set(/(\s|\n|^)*(.*?Compilation complete.*?$)(\s|\n)*/mgi, (sp, line) => {
+  return '\n' + c_end.bold(`${line}`) + '\n'
 })
 
 mp.set(/Property '([^']*)'/ig, (match) => {
