@@ -1,18 +1,19 @@
 #!/usr/bin/env node
 
-import chalk from 'chalk'
+import _chalk from 'chalk'
 import {spawn} from 'child_process'
 
 const args = process.argv.slice(2)
 const log = (s: string) => process.stdout.write(s)
 
+const chalk = _chalk.constructor({level: 3})
 const h = (n: number) => chalk.hsl(n, 100, 60)
 const c_file = h(0)
 const c_line = h(130).bold
 const c_end = chalk.rgb(22, 45, 43)
-const c_prop = chalk.hsl(80, 100, 10)
-const c_type = chalk.hsl(170, 100, 10)
-const basic = chalk.rgb(80, 80, 80)
+const c_prop = chalk.greenBright
+const c_type = chalk.cyanBright
+const basic = chalk.grey
 
 type ReplacerFn = (matches: string[]) => string
 
@@ -35,7 +36,7 @@ mp.set(/Error TS\d+: /gi, () => '')
 
 // Files
 mp.set(/^([^\(\n]+\/)?([^\(\n)]+)\((\d+),(\d+)\):/gm, ([path, file, line, col]) => {
-  return `${c_file(path)}${c_file.bold(file)} ${c_line(line)}:\n`
+  return `${path ? c_file(path) : ''}${c_file.bold(file)} ${c_line(line)}:\n`
 })
 
 var tsc = spawn('tsc', args)
