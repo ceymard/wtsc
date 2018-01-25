@@ -12,7 +12,7 @@ const chalk = _chalk.constructor({level: 3})
 const h = (n: number) => chalk.hsl(n, 60, 60)
 const c_file = h(0)
 const c_line = h(130).bold
-const c_end = h(30) // orange
+const c_end = chalk.hsl(30, 30, 40) // orange
 const c_module = h(180)
 const c_any = h(40)
 const c_param = h(60) // yellow
@@ -24,12 +24,12 @@ type ReplacerFn = (...matches: string[]) => string
 
 const mp = new Map<RegExp, ReplacerFn>()
 
-mp.set(/(\s|\n|^)*(.*?file change detected.*?$)(\s|\n)*/mgi, (sp, line) => {
-  return '\n' + c_end.bold(`${line}`) + '\n'
+mp.set(/(\s|\n|^)*(.*?file change detected.*?)$(\s|\n)*/mgi, (sp, line) => {
+  return c_end(`<<< change detected`) + '\n'
 })
 
-mp.set(/(\s|\n|^)*(.*?Compilation complete.*?$)(\s|\n)*/mgi, (sp, line) => {
-  return '\n' + c_end.bold(`${line}`) + '\n'
+mp.set(/(\s|\n|^)*(.*?Compilation complete.*?)$(\s|\n)*/mgi, (sp, line) => {
+  return c_end(`>>> done`) + '\n'
 })
 
 mp.set(/Property '([^']*)'/ig, (match) => {
@@ -52,6 +52,10 @@ mp.set(/Parameter '([^']*)'/, (match) => {
   return `parameter ${c_param(match)}`
 })
 
+mp.set(/'([^']*)' is declared/g, (match) => {
+  return `${c_param(match)} is declared`
+})
+
 mp.set(/Error TS\d+: /gi, () => '')
 
 
@@ -69,7 +73,7 @@ tsc.stdout.on('data', (_out: Buffer) => {
       return fn(...matches)
     })
   })
-  log(basic(out))
+  log(basic(out.trim()) + '\n')
 })
 
 tsc.stderr.on('data', err => {
