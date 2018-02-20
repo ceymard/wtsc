@@ -5,7 +5,7 @@ import {spawn} from 'child_process'
 
 const args = process.argv.slice(2)
 const log = (s: string) => {
-  process.stdout.write(s)
+  process.stdout.write(s.replace('\x1Bc', ''))
 }
 
 const chalk = _chalk.constructor({level: 3})
