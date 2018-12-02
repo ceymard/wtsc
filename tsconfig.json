@@ -8,7 +8,8 @@
         "strict": true,
         "noUnusedLocals": true,
         "noStrictGenericChecks": true,
-	"lib": ["es6"]
+	"lib": ["es6"],
+        "types": ["node"]
     },
     "include": ["wtsc.ts"]
 
