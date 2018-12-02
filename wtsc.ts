@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import _chalk from 'chalk'
-import {exec} from 'child_process'
+import {exec, ChildProcess} from 'child_process'
 
 const args = process.argv.slice(2)
 const log = (s: string) => {
@@ -64,7 +64,13 @@ mp.set(/^([^\(\n]+\/)?([^\(\n)]+)\((\d+),(\d+)\):/gm, (path, file, line, col) =>
   return `${path ? c_file(path) : ''}${c_file.bold(file)} ${c_line(line)}: `
 })
 
-var tsc = exec('tsc ' + args.map(a => `"${a.replace('"', '\\"')}"`).join(' '))
+var tsc: ChildProcess
+try {
+  // Try to call ttsc first
+  tsc = exec('ttsc ' + args.map(a => `"${a.replace('"', '\\"')}"`).join(' '))
+} catch (e) {
+  tsc = exec('tsc ' + args.map(a => `"${a.replace('"', '\\"')}"`).join(' '))
+}
 
 tsc.stdout.on('data', (_out: Buffer) => {
   var out = _out.toString('utf-8')
