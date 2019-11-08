@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 
 import _chalk from 'chalk'
-import {exec, ChildProcess} from 'child_process'
 
-const args = process.argv.slice(2)
 const log = (s: string) => {
   process.stdout.write(s.replace('\x1Bc', ''))
 }
@@ -64,15 +62,8 @@ mp.set(/^([^\(\n]+\/)?([^\(\n)]+)\((\d+),(\d+)\):/gm, (path, file, line, col) =>
   return `${path ? c_file(path) : ''}${c_file.bold(file)} ${c_line(line)}: `
 })
 
-var tsc: ChildProcess
-try {
-  // Try to call ttsc first
-  tsc = exec('ttsc ' + args.map(a => `"${a.replace('"', '\\"')}"`).join(' '))
-} catch (e) {
-  tsc = exec('tsc ' + args.map(a => `"${a.replace('"', '\\"')}"`).join(' '))
-}
 
-tsc.stdout.on('data', (_out: Buffer) => {
+process.stdin.on('data', (_out: Buffer) => {
   var out = _out.toString('utf-8')
   mp.forEach((fn, reg) => {
     out = out.replace(reg, (str, ...matches) => {
@@ -80,12 +71,4 @@ tsc.stdout.on('data', (_out: Buffer) => {
     })
   })
   log(basic(out.trim()) + '\n')
-})
-
-tsc.stderr.on('data', err => {
-  // log(`err: ${err}`)
-})
-
-tsc.on('close', (code, signal) => {
-  // log(`exited with ${code}, ${signal}`)
 })
