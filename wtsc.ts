@@ -86,6 +86,7 @@ const runcmd = command.length === 0 ? () => {} : debounce(() => {
 }, 50)
 
 
+var already_ran = false
 process.stdin.on('data', (_out: Buffer) => {
   var out = _out.toString('utf-8')
   mp.forEach((fn, reg) => {
@@ -94,8 +95,13 @@ process.stdin.on('data', (_out: Buffer) => {
     })
   })
 
-  if (should_run_command && out.includes('Watching for file changes.')) {
+  if (!already_ran) {
     runcmd()
+    already_ran = true
+  }
+
+  if (should_run_command && out.includes('Watching for file changes.')) {
+    already_ran = false
   }
 
   log(basic(out.trim()) + '\n')
