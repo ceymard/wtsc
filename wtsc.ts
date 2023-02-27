@@ -60,7 +60,7 @@ mp.set(/Error TS\d+: /gi, () => '')
 
 // Files
 mp.set(/^([^\(\n]+\/)?([^\(\n)]+)\((\d+),(\d+)\):/gm, (path, file, line, col) => {
-  return `${path ? c_file(path) : ''}${c_file.bold(file)} ${c_line(line)}: `
+  return `${path ? c_file(path) : ''}${c_file.bold(file)}:${c_line(line)}: `
 })
 
 // Command to be relaunched
